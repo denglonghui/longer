@@ -17,10 +17,13 @@ public class WebMagicTest {
 	private MyPipeline p;
 	@Test
     public void testWebMagic() throws Exception {
+		
 		 Spider.create(new MyProcessor())
          //在这里写上自己博客地址，从这个地址开始抓
          .addUrl("https://xueqiu.com/S/SH600783")
          .addPipeline(p)
          .run();
+
+		
 	}
 }

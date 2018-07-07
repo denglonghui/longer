@@ -125,6 +125,7 @@ public class EmailTest {
 	            Template template = freeMarkerConfigurer.getConfiguration().getTemplate("mail.html");
 	            String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
 	            helper.setText(html, true);
+	            
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }

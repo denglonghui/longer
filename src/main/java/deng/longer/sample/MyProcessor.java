@@ -17,7 +17,7 @@ public class MyProcessor implements PageProcessor {
     // 这里抽取支持链式调用。调用结束后，toString()表示转化为单个String，all()则转化为一个String列表。
     public void process(Page page) {
 //        System.out.println(page.getHtml());
-        String info = page.getHtml().$("div.stock-name").toString()+page.getHtml().$("div.quote-container").toString();
+        String info = page.getHtml().css("table.quote-info").toString();
         
         	page.putField("info",info);
        
