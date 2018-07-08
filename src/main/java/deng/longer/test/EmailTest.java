@@ -35,7 +35,7 @@ public class EmailTest {
 	    private FreeMarkerConfigurer freeMarkerConfigurer;  //自动注入
 
 
-	   @Test
+	 //  @Test
 	    public void sendSimpleMail() throws Exception {
 	        SimpleMailMessage message = new SimpleMailMessage();
 	        System.out.println(Sender);
@@ -46,7 +46,7 @@ public class EmailTest {
 	       
 	        mailSender.send(message);
 	    }
-	   @Test
+	  // @Test
 	    public void sendHtmlMail() {
 	        MimeMessage message = null;
 	        try {
@@ -66,7 +66,7 @@ public class EmailTest {
 	        }
 	        mailSender.send(message);
 	    }
-	   @Test
+	 //  @Test
 	    public void sendAttachmentsMail() {
 	        MimeMessage message = null;
 	        try {
@@ -85,7 +85,7 @@ public class EmailTest {
 	        }
 	        mailSender.send(message);
 	    }
-	   @Test
+	//   @Test
 	    public void sendInlineMail() {
 	        MimeMessage message = null;
 	        try {
@@ -112,11 +112,12 @@ public class EmailTest {
 	            message = mailSender.createMimeMessage();
 	            MimeMessageHelper helper = new MimeMessageHelper(message, true);
 	            helper.setFrom(Sender);
-	            helper.setTo(Sender);
+	            helper.setTo("515604205@qq.com");
 	            helper.setSubject("主题：模板邮件");
 
 	            Map<String, Object> model = new HashedMap();
 	            model.put("username", "zggdczfr");
+	            model.put("info", "zggdczfr");
 
 	            //修改 application.properties 文件中的读取路径
 //	            FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();

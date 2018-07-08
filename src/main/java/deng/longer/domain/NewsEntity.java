@@ -17,6 +17,7 @@ public class NewsEntity implements Serializable{
 	private String newsDate;
 	private String mainTopic;
 	private String subTopic;
+	private String from;
 	private String title;
 	private String content;
 	public String getNewsDate() {
@@ -51,6 +52,12 @@ public class NewsEntity implements Serializable{
 	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+	public String getFrom() {
+		return from;
+	}
+	public void setFrom(String from) {
+		this.from = from;
 	}
 	
 	
