@@ -27,7 +27,7 @@ public class MyPipeline implements Pipeline {
 		news.setTitle("基本信息");
 		newsDao.addNews(news);
 //		mailService.sendHtmlMail(info);
-		mailService.sendTemplateMail(resultItems.getAll(), "mail.html");
+//		mailService.sendTemplateMail(resultItems.getAll(), "mail.html");
 
 	}
 

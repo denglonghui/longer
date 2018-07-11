@@ -1,8 +1,19 @@
 package deng.longer.service;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.security.Security;
 import java.util.Map;
+import java.util.Properties;
 
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.NoSuchProviderException;
+import javax.mail.Session;
+import javax.mail.Store;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.collections.map.HashedMap;
@@ -16,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
+import com.sun.mail.util.BASE64DecoderStream;
+
 import freemarker.template.Template;
 
 @Component
@@ -24,7 +37,9 @@ public class MailService {
 	private JavaMailSender mailSender; // 自动注入的Bean
 
 	@Value("${spring.mail.username}")
-	private String Sender; // 读取配置文件中的参数
+	private String sender; // 读取配置文件中的参数
+	@Value("${spring.mail.password}")
+	private String password;
 	@Autowired
     private FreeMarkerConfigurer freeMarkerConfigurer;  //自动注入
 
@@ -33,8 +48,8 @@ public class MailService {
 		try {
 			message = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
-			helper.setFrom(Sender);
-			helper.setTo(Sender);
+			helper.setFrom(sender);
+			helper.setTo(sender);
 			helper.setSubject("标题：发送Html内容");
 
 			StringBuffer sb = new StringBuffer();
@@ -52,10 +67,10 @@ public class MailService {
 	        	System.out.println("开始发送邮件：");
 	            message = mailSender.createMimeMessage();
 	            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-	            helper.setFrom(Sender);
+	            helper.setFrom(sender);
 	         
 	            helper.setSubject("主题：模板邮件");
-	            String[] to={Sender};
+	            String[] to={sender};
 	            helper.setTo(to);
 //	            String[] 
 //	            helper.setTo({"deng_longhui@sohu.com",""});
@@ -70,5 +85,66 @@ public class MailService {
 	        }
 	        mailSender.send(message);
 	    }
+	 
+	 public void recieveMail() throws MessagingException, IOException{
+		 String pop3Server = "pop.qq.com";  
+	        String protocol = "pop3";  
+	        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+	        final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
+
+	        Properties props = new Properties();  
+	        props.setProperty("mail.store.protocol", protocol);  
+	        props.setProperty("mail.pop3.host", pop3Server);
+	        props.setProperty("mail.pop3.port", "995");
+	        props.setProperty("mail.pop3.keepmessagecontent", "true");
+	        props.setProperty("mail.pop3.startssl.required", "true");
+	        props.setProperty("mail.pop3.isSSL", "true"); 
+	        props.setProperty("mail.pop3.socketFactory.class", SSL_FACTORY);
+	        props.setProperty("mail.pop3.socketFactory.fallback", "false");
+	        props.setProperty("mail.pop3.port", "995");
+	        props.setProperty("mail.pop3.socketFactory.port", "995");
+	        props.setProperty("mail.pop3.auth", "true");
+
+	        
+	          
+	        // 使用Properties对象获得Session对象  
+	        Session session = Session.getInstance(props);  
+	        session.setDebug(true);  
+	       
+	        // 利用Session对象获得Store对象，并连接pop3服务器  
+	        Store store = session.getStore();  
+	        store.connect(pop3Server, sender, password);  
+	    
+	          
+	        // 获得邮箱内的邮件夹Folder对象，以"只读"打开  
+	        Folder folder = store.getFolder("inbox");  
+	        folder.open(Folder.READ_ONLY);  
+	          
+	        // 获得邮件夹Folder内的所有邮件Message对象  
+	        Message [] messages = folder.getMessages();  
+	          
+	        int mailCounts = messages.length;  
+	        for(int i = 0; i < mailCounts; i++) {  
+	              
+	            String subject = messages[i].getSubject();  
+	            String from = (messages[i].getFrom()[0]).toString();  
+	              
+	            System.out.println("第 " + (i+1) + "封邮件的主题：" + subject);  
+	            System.out.println("第 " + (i+1) + "封邮件的发件人地址：" + from);  
+	              
+	            System.out.println("是否打开该邮件(yes/no)?：");  
+	            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));  
+	            String input = br.readLine();  
+	            if("yes".equalsIgnoreCase(input)) {  
+	                // 直接输出到控制台中  
+	                messages[i].writeTo(System.out);  
+	               String a=new String( messages[i]);
+	              
+	                System.out.println(BASE64DecoderStream.decode(a.getBytes()));
+	            }             
+	        }  
+	        folder.close(false);  
+	        store.close();  
+	 }
 
 }

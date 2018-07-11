@@ -1,8 +1,10 @@
 package deng.longer.test;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.collections.map.HashedMap;
@@ -20,6 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
+import deng.longer.service.MailService;
 import freemarker.template.Template;
 
 @RunWith(SpringRunner.class)
@@ -28,6 +31,8 @@ import freemarker.template.Template;
 public class EmailTest {
 	 @Autowired
 	    private JavaMailSender mailSender; //自动注入的Bean
+	 @Autowired
+	 private MailService mailService;
 
 	    @Value("${spring.mail.username}")
 	    private String Sender; //读取配置文件中的参数
@@ -105,7 +110,7 @@ public class EmailTest {
 	        mailSender.send(message);
 	    }
 	   
-	   @Test
+	  // @Test
 	    public void sendTemplateMail(){
 	        MimeMessage message = null;
 	        try {
@@ -132,6 +137,18 @@ public class EmailTest {
 	        }
 	        mailSender.send(message);
 	    }
+	   @Test
+	    public void testRecieveMail(){
+		   try {
+			mailService.recieveMail();
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	   }
 
 	public static void main(String[] args) {
 		
