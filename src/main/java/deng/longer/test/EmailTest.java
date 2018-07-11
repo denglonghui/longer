@@ -112,7 +112,7 @@ public class EmailTest {
 	            message = mailSender.createMimeMessage();
 	            MimeMessageHelper helper = new MimeMessageHelper(message, true);
 	            helper.setFrom(Sender);
-	            helper.setTo("515604205@qq.com");
+	            helper.setTo("deng_longhui@sohu.com");
 	            helper.setSubject("主题：模板邮件");
 
 	            Map<String, Object> model = new HashedMap();
