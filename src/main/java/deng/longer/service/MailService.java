@@ -8,10 +8,13 @@ import java.security.Security;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.mail.BodyPart;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.NoSuchProviderException;
+import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.MimeMessage;
@@ -27,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
+import com.sun.mail.pop3.POP3Message;
 import com.sun.mail.util.BASE64DecoderStream;
 
 import freemarker.template.Template;
@@ -128,23 +132,55 @@ public class MailService {
 	              
 	            String subject = messages[i].getSubject();  
 	            String from = (messages[i].getFrom()[0]).toString();  
-	              
+	             System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++"); 
 	            System.out.println("第 " + (i+1) + "封邮件的主题：" + subject);  
 	            System.out.println("第 " + (i+1) + "封邮件的发件人地址：" + from);  
 	              
 	            System.out.println("是否打开该邮件(yes/no)?：");  
-	            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));  
-	            String input = br.readLine();  
-	            if("yes".equalsIgnoreCase(input)) {  
+//	            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));  
+//	            String input = br.readLine();  
+//	            if("yes".equalsIgnoreCase(input)) {  
 	                // 直接输出到控制台中  
-	                messages[i].writeTo(System.out);  
-	               String a=new String( messages[i]);
+	            System.out.println(messages[i].getClass().getName());
+	            MimeMessage msg = (MimeMessage) messages[i];  
+
+	            StringBuffer content = new StringBuffer(30);  
+	            getMailTextContent(msg, content);  
+	            System.out.println("开始打印邮件内容：");
+                 System.out.println(content);
+                 System.out.println("打印邮件内容结束");
+//	               String a=new String( messages[i]);
 	              
-	                System.out.println(BASE64DecoderStream.decode(a.getBytes()));
-	            }             
+//	                System.out.println(BASE64DecoderStream.decode(a.getBytes()));
+//	            }             
 	        }  
 	        folder.close(false);  
 	        store.close();  
 	 }
+
+	 /** 
+	     * 获得邮件文本内容 
+	     * @param part 邮件体 
+	     * @param content 存储邮件文本内容的字符串 
+	     * @throws MessagingException 
+	     * @throws IOException 
+	     */  
+	    public static void getMailTextContent(Part part, StringBuffer content) throws MessagingException, IOException {  
+	        //如果是文本类型的附件，通过getContent方法可以取到文本内容，但这不是我们需要的结果，所以在这里要做判断  
+	        boolean isContainTextAttach = part.getContentType().indexOf("name") > 0;   
+	        if (part.isMimeType("text/*") && !isContainTextAttach) {  
+	            content.append(part.getContent().toString());  
+	        } else if (part.isMimeType("message/rfc822")) {   
+	            getMailTextContent((Part)part.getContent(),content);  
+	        } else if (part.isMimeType("multipart/*")) {  
+	            Multipart multipart = (Multipart) part.getContent();  
+	            int partCount = multipart.getCount();  
+	            for (int i = 0; i < partCount; i++) {  
+	                BodyPart bodyPart = multipart.getBodyPart(i);  
+	                getMailTextContent(bodyPart,content);  
+	            }  
+	        }  
+	    }  
+
 
 }
