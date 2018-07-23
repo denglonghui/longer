@@ -35,7 +35,7 @@ public class HttpTest {
 			    httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 2000);
 			     String url="http://61.186.157.171:8103/API/EatA/RoomQuery";   
 			    post = new HttpPost(url);
-			    long timespan=System.currentTimeMillis();
+			    long timespan=System.currentTimeMillis()/1000;
 			    JSONObject reqObj=new JSONObject();
 				String usrName="婚庆园";
 				String userId="13760429596";
@@ -52,7 +52,7 @@ public class HttpTest {
 			    String sessionId = getSessionId();
 			    post.setHeader("SessionId", sessionId);
 			    post.setHeader("appid", "12345678");
-			                
+			     System.out.println(reqObj.toString());           
 			    // 构建消息实体
 			    StringEntity entity = new StringEntity(reqObj.toString(), Charset.forName("UTF-8"));
 			    entity.setContentEncoding("UTF-8");
